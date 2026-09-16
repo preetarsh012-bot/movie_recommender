@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        About - Movie Recommendation System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<nav class="navbar">
+
+    <a
+        href="{{ url_for('home') }}"
+        class="logo"
+    >
+        Movie Recommender
+    </a>
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('recommend_page') }}">
+            Recommend
+        </a>
+
+        <a href="{{ url_for('history') }}">
+            History
+        </a>
+
+        <a href="{{ url_for('favorites') }}">
+            Favorites
+        </a>
+
+        <a href="{{ url_for('about') }}">
+            About
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="container">
+
+    <div class="movie-card">
+
+        <h1>
+            About Movie Recommender
+        </h1>
+
+        <p>
+            This Movie Recommendation System
+            helps users discover movies similar
+            to the movie they search for.
+        </p>
+
+        <p>
+            The system combines a machine learning
+            recommendation model with TMDB movie
+            information.
+        </p>
+
+        <p>
+            It also provides movie posters,
+            ratings, genres, release dates,
+            descriptions and trailer links.
+        </p>
+
+        <h2>
+            Features
+        </h2>
+
+        <p>
+            🎬 Movie Recommendations
+        </p>
+
+        <p>
+            🔎 Movie Search
+        </p>
+
+        <p>
+            ⭐ Movie Ratings
+        </p>
+
+        <p>
+            🎭 Movie Genres
+        </p>
+
+        <p>
+            ▶️ YouTube Trailers
+        </p>
+
+        <p>
+            ❤️ Favorites
+        </p>
+
+        <p>
+            🕒 Search History
+        </p>
+
+    </div>
+
+</div>
+
+
+</body>
+
+</html>

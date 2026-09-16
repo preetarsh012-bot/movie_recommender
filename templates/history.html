@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Search History - Movie Recommender
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<nav class="navbar">
+
+    <a
+        href="{{ url_for('home') }}"
+        class="logo"
+    >
+        Movie Recommender
+    </a>
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('recommend_page') }}">
+            Recommend
+        </a>
+
+        <a href="{{ url_for('history') }}">
+            History
+        </a>
+
+        <a href="{{ url_for('favorites') }}">
+            Favorites
+        </a>
+
+        <a href="{{ url_for('about') }}">
+            About
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- =====================================================
+     HISTORY
+===================================================== -->
+
+<div class="history-container">
+
+    <h1>
+        Search History
+    </h1>
+
+
+    {% if history %}
+
+
+    <div class="history-list">
+
+
+        {% for item in history %}
+
+
+        <div class="history-item">
+
+
+            <!-- MOVIE NAME -->
+
+            <form
+                action="{{ url_for('recommend_page') }}"
+                method="POST"
+                class="history-movie-form"
+            >
+
+                <input
+                    type="hidden"
+                    name="movie_name"
+                    value="{{ item.movie_name }}"
+                >
+
+                <button
+                    type="submit"
+                    class="history-movie-button"
+                >
+                    🎬 {{ item.movie_name }}
+                </button>
+
+            </form>
+
+
+            <!-- RIGHT SIDE -->
+
+            <div class="history-right">
+
+                <span class="search-time">
+
+                    {{ item.searched_at }}
+
+                </span>
+
+
+                <form
+                    action="{{ url_for(
+                        'delete_history',
+                        history_id=item.id
+                    ) }}"
+                    method="POST"
+                    class="delete-history-form"
+                >
+
+                    <button
+                        type="submit"
+                        class="delete-history-button"
+                        title="Delete"
+                    >
+                        🗑️
+                    </button>
+
+                </form>
+
+            </div>
+
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+    <!-- CLEAR ALL -->
+
+    <form
+        action="{{ url_for('clear_history') }}"
+        method="POST"
+        class="clear-history-form"
+    >
+
+        <button
+            type="submit"
+            class="clear-history-button"
+        >
+            🗑️ Clear All History
+        </button>
+
+    </form>
+
+
+    {% else %}
+
+
+    <div class="empty-history">
+
+        <h2>
+            No Search History
+        </h2>
+
+        <p>
+            Search for a movie to see it here.
+        </p>
+
+    </div>
+
+
+    {% endif %}
+
+
+</div>
+
+
+</body>
+
+</html>

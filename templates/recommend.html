@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Recommendations - Movie Recommender
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<nav class="navbar">
+
+    <a
+        href="{{ url_for('home') }}"
+        class="logo"
+    >
+        Movie Recommender
+    </a>
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('recommend_page') }}">
+            Recommend
+        </a>
+
+        <a href="{{ url_for('history') }}">
+            History
+        </a>
+
+        <a href="{{ url_for('favorites') }}">
+            Favorites
+        </a>
+
+        <a href="{{ url_for('about') }}">
+            About
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<div class="container">
+
+
+    <!-- =================================================
+         SEARCH MOVIE
+    ================================================== -->
+
+    <h1>
+        🎬 Find Movie Recommendations
+    </h1>
+
+    <div class="search-box">
+
+        <form
+            action="{{ url_for('recommend_page') }}"
+            method="POST"
+        >
+
+            <input
+                type="text"
+                name="movie_name"
+                placeholder="Enter movie name..."
+                value="{{ movie_name or '' }}"
+                required
+            >
+
+            <button type="submit">
+                Recommend
+            </button>
+
+        </form>
+
+    </div>
+
+
+    {% if selected_movie %}
+
+
+    <!-- =================================================
+         SELECTED MOVIE
+    ================================================== -->
+
+    <div class="selected-movie-card">
+
+
+        <!-- POSTER -->
+
+        <div class="selected-poster">
+
+            {% if selected_movie.poster %}
+
+                <img
+                    src="{{ selected_movie.poster }}"
+                    alt="{{ selected_movie.title }}"
+                >
+
+            {% else %}
+
+                <div class="no-poster">
+                    No Poster Available
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- DETAILS -->
+
+        <div class="selected-details">
+
+            <h2>
+                {{ selected_movie.title }}
+            </h2>
+
+            <p>
+                ⭐ Rating:
+                {{ selected_movie.rating }}
+            </p>
+
+            <p>
+                🎭 Genres:
+                {{ selected_movie.genres }}
+            </p>
+
+            <p>
+                📅 Release Date:
+                {{ selected_movie.release_date }}
+            </p>
+
+            <p class="selected-overview">
+                {{ selected_movie.overview }}
+            </p>
+
+
+            <!-- TRAILER -->
+
+            {% if selected_movie.trailer %}
+
+                <a
+                    href="{{ selected_movie.trailer }}"
+                    target="_blank"
+                    class="trailer-button"
+                >
+                    ▶ Watch Trailer
+                </a>
+
+            {% endif %}
+
+
+            <!-- FAVORITE -->
+
+            {% if selected_movie.favorite %}
+
+                <button
+                    type="button"
+                    class="favorite-button"
+                    disabled
+                >
+                    ❤️ Already in Favorites
+                </button>
+
+            {% else %}
+
+                <form
+                    action="{{ url_for('add_favorite') }}"
+                    method="POST"
+                    class="favorite-form"
+                >
+
+                    <input
+                        type="hidden"
+                        name="movie_name"
+                        value="{{ selected_movie.title }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="movie_id"
+                        value="{{ selected_movie.movie_id or '' }}"
+                    >
+
+                    <button
+                        type="submit"
+                        class="favorite-button"
+                    >
+                        ❤️ Add to Favorites
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         RECOMMENDATION HEADING
+    ================================================== -->
+
+    <h1 class="recommendation-heading">
+        Recommended Movies
+    </h1>
+
+
+    {% if recommendations %}
+
+
+    <!-- =================================================
+         RECOMMENDATION GRID
+    ================================================== -->
+
+    <div class="movie-container">
+
+
+        {% for movie in recommendations %}
+
+
+        <div class="movie-card">
+
+
+            <!-- POSTER -->
+
+            {% if movie.poster %}
+
+                <img
+                    src="{{ movie.poster }}"
+                    alt="{{ movie.title }}"
+                    class="movie-poster"
+                >
+
+            {% else %}
+
+                <div class="no-poster">
+                    No Poster Available
+                </div>
+
+            {% endif %}
+
+
+            <!-- TITLE -->
+
+            <h2>
+                {{ movie.title }}
+            </h2>
+
+
+            <!-- RATING -->
+
+            <p>
+                ⭐ Rating:
+                {{ movie.rating }}
+            </p>
+
+
+            <!-- GENRES -->
+
+            <p>
+                🎭 Genres:
+                {{ movie.genres }}
+            </p>
+
+
+            <!-- RELEASE DATE -->
+
+            <p>
+                📅 Release Date:
+                {{ movie.release_date }}
+            </p>
+
+
+            <!-- OVERVIEW -->
+
+            <p class="overview">
+                {{ movie.overview }}
+            </p>
+
+
+            <!-- =================================================
+                 RECOMMENDATION SOURCE
+            ================================================== -->
+
+            {% if movie.recommendation_source == "Sequel" %}
+
+                <p>
+                    🎬 Source:
+                    Sequel
+                </p>
+
+            {% elif movie.similarity is defined and movie.similarity is not none %}
+
+                <p>
+                    🔎 Similarity:
+                    {{ movie.similarity }}%
+                </p>
+
+            {% else %}
+
+                <p>
+                    🔎 Source:
+                    TMDB Recommendation
+                </p>
+
+            {% endif %}
+
+
+            <!-- TRAILER -->
+
+            {% if movie.trailer %}
+
+                <a
+                    href="{{ movie.trailer }}"
+                    target="_blank"
+                    class="trailer-button"
+                >
+                    ▶ Watch Trailer
+                </a>
+
+            {% endif %}
+
+
+            <!-- FAVORITE -->
+
+            {% if movie.favorite %}
+
+                <button
+                    type="button"
+                    class="favorite-button"
+                    disabled
+                >
+                    ❤️ Already in Favorites
+                </button>
+
+            {% else %}
+
+                <form
+                    action="{{ url_for('add_favorite') }}"
+                    method="POST"
+                    class="favorite-form"
+                >
+
+                    <input
+                        type="hidden"
+                        name="movie_name"
+                        value="{{ movie.title }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="movie_id"
+                        value="{{ movie.movie_id or '' }}"
+                    >
+
+                    <button
+                        type="submit"
+                        class="favorite-button"
+                    >
+                        ❤️ Add to Favorites
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+    {% else %}
+
+
+    <!-- =================================================
+         NO RECOMMENDATIONS
+    ================================================== -->
+
+    <div class="not-found">
+
+        <h3>
+            No recommendations found.
+        </h3>
+
+        <p>
+            Try searching for another movie.
+        </p>
+
+    </div>
+
+
+    {% endif %}
+
+
+    <!-- =================================================
+         BACK BUTTON
+    ================================================== -->
+
+    <a
+        href="{{ url_for('home') }}"
+        class="back-button"
+    >
+        ← Search Another Movie
+    </a>
+
+
+    {% else %}
+
+
+    <!-- =================================================
+         MOVIE NOT FOUND
+    ================================================== -->
+
+    {% if movie_name %}
+
+    <div class="not-found">
+
+        <h2>
+            Movie Not Found
+        </h2>
+
+        <p>
+            Please search for another movie.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+
+    {% endif %}
+
+
+</div>
+
+
+</body>
+</html>

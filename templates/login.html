@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - Movie Recommender</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+
+            background: #141414;
+            color: white;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 15px;
+
+            padding: 35px;
+
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-box h1 {
+            text-align: center;
+
+            color: #f4a261;
+
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .login-box h2 {
+            text-align: center;
+
+            color: white;
+
+            font-size: 22px;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+
+            color: #ddd;
+
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+
+            padding: 13px 14px;
+
+            background: #141414;
+            color: white;
+
+            border: 1px solid #444;
+            border-radius: 8px;
+
+            font-size: 15px;
+
+            outline: none;
+
+            transition: 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #f4a261;
+        }
+
+        .form-group input::placeholder {
+            color: #777;
+        }
+
+
+        /* =========================
+           PASSWORD EYE ICON
+        ========================= */
+
+        .password-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-box input {
+            padding-right: 48px;
+        }
+
+        .eye-button {
+            position: absolute;
+
+            right: 12px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            width: 26px;
+            height: 26px;
+
+            padding: 0;
+
+            background: transparent;
+            border: none;
+
+            color: #888;
+
+            cursor: pointer;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .eye-button:hover {
+            color: #f4a261;
+        }
+
+        .eye-button svg {
+            width: 21px;
+            height: 21px;
+
+            stroke: currentColor;
+
+            fill: none;
+
+            stroke-width: 2;
+
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+
+        /* =========================
+           LOGIN BUTTON
+        ========================= */
+
+        .login-button {
+            width: 100%;
+
+            padding: 13px;
+
+            margin-top: 5px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: #f4a261;
+
+            color: #141414;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        .login-button:hover {
+            background: #ffffff;
+        }
+
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        .error-message {
+            background: rgba(255, 80, 80, 0.12);
+
+            border: 1px solid #ff6b6b;
+
+            color: #ff8585;
+
+            padding: 10px;
+
+            border-radius: 7px;
+
+            text-align: center;
+
+            margin-bottom: 18px;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           LINKS
+        ========================= */
+
+        .auth-link {
+            text-align: center;
+
+            color: #aaa;
+
+            font-size: 14px;
+
+            margin-top: 20px;
+        }
+
+        .auth-link a {
+            color: #f4a261;
+
+            text-decoration: none;
+        }
+
+        .auth-link a:hover {
+            color: white;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 500px) {
+
+            .login-container {
+                padding: 15px;
+            }
+
+            .login-box {
+                padding: 25px 20px;
+            }
+
+            .login-box h1 {
+                font-size: 24px;
+            }
+
+            .login-box h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <div class="login-box">
+
+        <h1>🎬 Movie Recommender</h1>
+
+        <h2>Login</h2>
+
+
+        {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+        {% endif %}
+
+
+        <form method="POST">
+
+            <!-- Username -->
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Password -->
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="password-box">
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="eye-button"
+                        onclick="togglePassword('password', this)"
+                        aria-label="Show password"
+                    >
+
+                        <!-- Eye Icon -->
+                        <svg
+                            class="eye-icon"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Login Button -->
+            <button
+                type="submit"
+                class="login-button"
+            >
+                Login
+            </button>
+
+        </form>
+
+
+        <p class="auth-link">
+            Don't have an account?
+            <a href="{{ url_for('register') }}">
+                Register
+            </a>
+        </p>
+
+
+        <p class="auth-link">
+            <a href="{{ url_for('home') }}">
+                ← Back to Home
+            </a>
+        </p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function togglePassword(inputId, button) {
+
+    const input = document.getElementById(inputId);
+
+    const icon = button.querySelector("svg");
+
+
+    if (input.type === "password") {
+
+        input.type = "text";
+
+        // Change eye to crossed-eye
+        icon.innerHTML = `
+            <path d="M3 3l18 18"></path>
+            <path d="M10.6 5.1C11.05 5.03 11.52 5 12 5c6.5 0 10 7 10 7s-1.45 2.9-4.15 4.85"></path>
+            <path d="M6.7 6.7C3.55 8.45 2 12 2 12s3.5 7 10 7c1.55 0 2.92-.35 4.12-.87"></path>
+            <path d="M9.88 9.88a3 3 0 014.24 4.24"></path>
+        `;
+
+        button.setAttribute("aria-label", "Hide password");
+
+    } else {
+
+        input.type = "password";
+
+        // Change back to normal eye
+        icon.innerHTML = `
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+        `;
+
+        button.setAttribute("aria-label", "Show password");
+    }
+}
+
+</script>
+
+</body>
+</html>

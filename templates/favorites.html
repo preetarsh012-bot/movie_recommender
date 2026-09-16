@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Favorite Movies
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+<nav class="navbar">
+
+    <a
+        href="{{ url_for('home') }}"
+        class="logo"
+    >
+        Movie Recommender
+    </a>
+
+
+    <div class="nav-links">
+
+        <a href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        <a href="{{ url_for('recommend_page') }}">
+            Recommend
+        </a>
+
+        <a href="{{ url_for('history') }}">
+            History
+        </a>
+
+        <a href="{{ url_for('favorites') }}">
+            Favorites
+        </a>
+
+        <a href="{{ url_for('about') }}">
+            About
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================================================
+     FAVORITES
+========================================================= -->
+
+<div class="container">
+
+    <h1>
+        My Favorite Movies ❤️
+    </h1>
+
+
+    {% if favorites %}
+
+
+    <div class="movie-container">
+
+
+        {% for movie in favorites %}
+
+
+        <div class="movie-card">
+
+
+            <!-- POSTER -->
+
+            {% if movie.poster %}
+
+            <img
+                src="{{ movie.poster }}"
+                alt="{{ movie.title }}"
+                class="movie-poster"
+            >
+
+            {% else %}
+
+            <div class="no-poster">
+                No Poster Available
+            </div>
+
+            {% endif %}
+
+
+            <!-- MOVIE DETAILS -->
+
+            <div class="movie-info">
+
+
+                <h3>
+                    {{ movie.title }}
+                </h3>
+
+
+                <p>
+                    ⭐ Rating:
+                    {{ movie.rating }}
+                </p>
+
+
+                <p>
+                    🎭 Genres:
+                    {{ movie.genres }}
+                </p>
+
+
+                <p>
+                    📅 Release:
+                    {{ movie.release_date }}
+                </p>
+
+
+                <p>
+                    {{ movie.overview }}
+                </p>
+
+
+                <!-- TRAILER -->
+
+                {% if movie.trailer %}
+
+                <a
+                    href="{{ movie.trailer }}"
+                    target="_blank"
+                    class="movie-button"
+                >
+                    ▶ Watch Trailer
+                </a>
+
+                {% endif %}
+
+
+                <!-- REMOVE FAVORITE -->
+
+                <form
+                    action="{{ url_for(
+                        'remove_favorite',
+                        favorite_id=movie.favorite_id
+                    ) }}"
+                    method="POST"
+                >
+
+                    <button
+                        type="submit"
+                    >
+                        💔 Remove Favorite
+                    </button>
+
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+    {% else %}
+
+
+    <p>
+        You haven't added any movies to your favorites yet.
+    </p>
+
+
+    <a
+        href="{{ url_for('recommend_page') }}"
+        class="movie-button"
+    >
+        🎬 Find Movies
+    </a>
+
+
+    {% endif %}
+
+
+</div>
+
+
+</body>
+
+</html>
