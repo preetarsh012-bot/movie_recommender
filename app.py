@@ -48,51 +48,16 @@ app.secret_key = os.getenv(
 # DATABASE
 # ============================================================
 
-DATA_DIR = os.path.join(
-    BASE_DIR,
-    "data"
-)
+DATABASE_PATH = os.path.join(BASE_DIR, "movie_recommender.db")
 
-os.makedirs(
-    DATA_DIR,
-    exist_ok=True
-)
-
-DATABASE = os.path.join(
-    DATA_DIR,
-    "movie_recommender.db"
-)
-
-
-# ============================================================
-# REQUEST SESSION
-# ============================================================
-
-tmdb_session = requests.Session()
-
-
-# ============================================================
-# DATABASE CONNECTION
-# ============================================================
 
 def get_db_connection():
-
-    connection = sqlite3.connect(
-        DATABASE,
-        timeout=30
-    )
-
+    connection = sqlite3.connect(DATABASE_PATH)
     connection.row_factory = sqlite3.Row
-
-    connection.execute(
-        "PRAGMA busy_timeout = 30000"
-    )
-
-    connection.execute(
-        "PRAGMA journal_mode = WAL"
-    )
-
     return connection
+
+
+tmdb_session = requests.Session()
 
 
 # ============================================================
@@ -134,158 +99,49 @@ def login_required(route_function):
 
 # ============================================================
 # CREATE DATABASE TABLES
-# ============================================================
-
 def create_tables():
-
     connection = get_db_connection()
+    cursor = connection.cursor()
 
-    try:
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
 
-        # ----------------------------------------------------
-        # USERS
-        # ----------------------------------------------------
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS search_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            movie_name TEXT NOT NULL,
+            movie_id INTEGER,
+            searched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
 
-        connection.execute("""
-            CREATE TABLE IF NOT EXISTS users (
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS favorites (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            movie_name TEXT NOT NULL,
+            movie_id INTEGER,
+            added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE (user_id, movie_name),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
 
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+    connection.commit()
+    connection.close()
 
-                username TEXT NOT NULL UNIQUE,
-
-                password TEXT NOT NULL
-
-            )
-        """)
-
-
-        # ----------------------------------------------------
-        # SEARCH HISTORY
-        # ----------------------------------------------------
-
-        connection.execute("""
-            CREATE TABLE IF NOT EXISTS search_history (
-
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-                movie_name TEXT NOT NULL,
-
-                searched_at TIMESTAMP
-                    DEFAULT CURRENT_TIMESTAMP,
-
-                user_id INTEGER
-
-            )
-        """)
-
-
-        # ----------------------------------------------------
-        # CHECK SEARCH HISTORY COLUMNS
-        # ----------------------------------------------------
-
-        history_columns = connection.execute(
-            "PRAGMA table_info(search_history)"
-        ).fetchall()
-
-        history_column_names = {
-            column["name"]
-            for column in history_columns
-        }
-
-
-        if "user_id" not in history_column_names:
-
-            connection.execute(
-                """
-                ALTER TABLE search_history
-                ADD COLUMN user_id INTEGER
-                """
-            )
-
-
-        # ----------------------------------------------------
-        # FAVORITES
-        # ----------------------------------------------------
-
-        connection.execute("""
-            CREATE TABLE IF NOT EXISTS favorites (
-
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-                movie_name TEXT NOT NULL,
-
-                movie_id INTEGER,
-
-                added_at TIMESTAMP
-                    DEFAULT CURRENT_TIMESTAMP,
-
-                user_id INTEGER,
-
-                UNIQUE(user_id, movie_name)
-
-            )
-        """)
-
-
-        # ----------------------------------------------------
-        # CHECK FAVORITES COLUMNS
-        # ----------------------------------------------------
-
-        favorite_columns = connection.execute(
-            "PRAGMA table_info(favorites)"
-        ).fetchall()
-
-        favorite_column_names = {
-            column["name"]
-            for column in favorite_columns
-        }
-
-
-        # Add added_at if missing
-
-        if "added_at" not in favorite_column_names:
-
-            connection.execute(
-                """
-                ALTER TABLE favorites
-                ADD COLUMN added_at TIMESTAMP
-                """
-            )
-
-
-        # Add user_id if missing
-
-        if "user_id" not in favorite_column_names:
-
-            connection.execute(
-                """
-                ALTER TABLE favorites
-                ADD COLUMN user_id INTEGER
-                """
-            )
-
-
-        connection.commit()
-
-    except Exception:
-
-        connection.rollback()
-
-        raise
-
-    finally:
-
-        connection.close()
-
-
-# ============================================================
-# CREATE DATABASE
-# ============================================================
 
 create_tables()
 
 
-# ============================================================
 # LOAD MACHINE LEARNING MODELS
 # ============================================================
 
