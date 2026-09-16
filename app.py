@@ -3,6 +3,7 @@ import pickle
 import requests
 import os
 import sqlite3
+import tempfile
 
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -48,7 +49,10 @@ app.secret_key = os.getenv(
 # DATABASE
 # ============================================================
 
-DATABASE_PATH = os.path.join(BASE_DIR, "movie_recommender.db")
+if os.getenv("VERCEL"):
+    DATABASE_PATH = os.path.join(tempfile.gettempdir(), "movie_recommender.db")
+else:
+    DATABASE_PATH = os.path.join(BASE_DIR, "movie_recommender.db")
 
 
 def get_db_connection():
