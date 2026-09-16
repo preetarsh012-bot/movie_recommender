@@ -302,11 +302,7 @@ with open(
 
 
 SIMILARITY_URL = (
-    "https://huggingface.co/"
-    "coderancer/movie-recommender-model/"
-    "resolve/"
-    "2e2c0c2cb35f486f311ec4d947cea0f66864c249/"
-    "similarity.pkl"
+    "https://huggingface.co/coderancer/movie-recommender-model/resolve/main/similarity.pkl"
 )
 
 
